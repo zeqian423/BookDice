@@ -71,37 +71,47 @@
     .badge{font-size:12px; color:#0c1622; background:linear-gradient(135deg,#a7f3d0,#7fb3ff); padding:6px 10px; border-radius:999px; font-weight:700}
 @media (max-width: 600px) {
     body {
-        padding: 8px !important;
+        padding: 8px 10px !important;
     }
     .container {
         padding: 0 !important;
-        gap: 10px !important;
+        gap: 8px !important;
     }
+    /* 精简顶部标题区域，确保一进页面就能看见大标题 */
     header {
-        margin-bottom: 8px !important;
+        margin: 4px 0 8px 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
     }
     h1 {
-        font-size: 1.4rem !important;
+        font-size: 1.3rem !important;
+        margin: 0 !important;
+    }
+    .badge {
+        font-size: 10px !important;
+        padding: 2px 6px !important;
     }
     .card {
-        padding: 12px !important;
+        padding: 10px !important;
     }
     textarea {
-        min-height: 80px !important;
-        max-height: 110px !important;
+        min-height: 75px !important;
+        max-height: 100px !important;
     }
-    /* 准确定位 .row，把 4 个按钮变成 2x2 布局 */
-    .row {
+    .card > div:has(button), 
+    .btn-group, 
+    .actions {
         display: grid !important;
         grid-template-columns: 1fr 1fr !important;
-        gap: 8px !important;
-        margin: 8px 0 !important;
+        gap: 6px !important;
+        margin: 6px 0 !important;
     }
-    .row button {
+    button {
         width: 100% !important;
         margin: 0 !important;
-        padding: 8px 4px !important;
-        font-size: 13px !important;
+        padding: 6px 2px !important;
+        font-size: 12px !important;
     }
 }
   </style>
