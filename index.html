@@ -69,37 +69,38 @@
     .foot{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap}
     .hint{font-size:13px; color:#93a3b8}
     .badge{font-size:12px; color:#0c1622; background:linear-gradient(135deg,#a7f3d0,#7fb3ff); padding:6px 10px; border-radius:999px; font-weight:700}
- @media (max-width: 600px) {
+@media (max-width: 600px) {
     body {
-        padding: 8px !important;
+        padding: 12px 8px !important;
     }
     .container {
         padding: 0 !important;
-        gap: 10px !important;
+        gap: 12px !important;
+    }
+    header {
+        margin-bottom: 12px !important;
+    }
+    h1 {
+        font-size: 1.5rem !important;
     }
     .card {
-        padding: 12px !important;
-        border-radius: 12px !important;
+        padding: 14px !important;
     }
-    /* 进一步压缩输入框高度 */
     textarea {
-        min-height: 90px !important;
-        max-height: 120px !important;
-        padding: 8px !important;
-        font-size: 14px !important;
+        min-height: 100px !important;
+        max-height: 140px !important;
     }
-    /* 压缩结果展示框高度 */
-    .result-box {
-        padding: 12px !important;
-        min-height: 60px !important;
-    }
-    /* 缩小按钮与间距 */
+    /* 核心修复：手机端让 4 个按钮变成 2x2 网格排列，解决变形溢出 */
     .btn-group {
-        gap: 6px !important;
-        margin-top: 8px !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        margin: 10px 0 !important;
     }
-    button {
-        padding: 8px 12px !important;
+    .btn-group button {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 8px 4px !important;
         font-size: 13px !important;
     }
 }
