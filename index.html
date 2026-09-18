@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>选书骰子</title>
+  <style>
+    :root{
+      --bg: #0f1115;
+      --card: #171a21;
+      --text: #e7edf3;
+      --muted: #9aa7b2;
+      --accent: #58d68d;
+      --accent-2: #7fb3ff;
+      --danger: #ff6b6b;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background: radial-gradient(1200px 800px at 10% -10%, #142233 0%, #0f1115 45%, #0b0d10 100%);
+      color:var(--text); font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Noto Sans CJK SC, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      display:flex; align-items:center; justify-content:center; padding:32px;
+    }
+    .wrap{width:min(960px,100%);}
+    .title{display:flex; align-items:baseline; gap:12px;}
+    .title h1{margin:0; font-size: clamp(24px, 4vw, 36px); letter-spacing:.5px}
+    .title .tag{color:var(--muted); font-size:14px; padding:4px 10px; border:1px solid #253044; border-radius:999px}
+    .grid{display:grid; grid-template-columns: 1.3fr .9fr; gap:20px; margin-top:18px}
+    @media (max-width: 880px){.grid{grid-template-columns:1fr;}}
+    .card{background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border:1px solid #222a36; border-radius: var(--radius); box-shadow: var(--shadow);}
+    .card .hd{padding:16px 18px; border-bottom:1px solid #212a35; display:flex; align-items:center; justify-content:space-between}
+    .card .hd h2{margin:0; font-size:16px; color:#cfe3ff; letter-spacing:.3px}
+    .card .bd{padding:18px}
+    textarea{
+      width:100%; height:260px; resize:vertical; min-height:160px; max-height:420px;
+      background:#0e1218; color:var(--text); border:1px solid #1f2734; border-radius:12px; padding:14px 12px; outline:none;
+      box-shadow: inset 0 0 0 1px #0d1522;
+    }
+    textarea::placeholder{color:#627084}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    button{
+      appearance:none; border:none; padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600; letter-spacing:.3px;
+      transition:.2s transform ease, .2s filter ease, .2s box-shadow ease;
+    }
+    .btn{background:#1b2331; color:#dfe9f5; border:1px solid #2a3548}
+    .btn:hover{filter:brightness(1.05)}
+    .btn:active{transform:translateY(1px)}
+    .primary{background: linear-gradient(135deg, var(--accent-2), #54f0c1); color:#081019; border:none; box-shadow:0 8px 30px rgba(127,179,255,.25)}
+    .danger{background: linear-gradient(135deg, #ff8a8a, var(--danger)); color:#1a0b0b;}
+    .ghost{background:transparent; border:1px dashed #2a3548; color:#a9b9cc}
+    .muted{color:var(--muted)}
+
+    .result{
+      font-size: clamp(20px, 3.2vw, 28px);
+      background: linear-gradient(180deg, #101520, #0c1017);
+      border:1px solid #263246; border-radius: 14px; padding:16px; min-height:84px; display:flex; align-items:center; justify-content:center; text-align:center;
+    }
+    .result.spin{animation: pulse .9s ease-in-out infinite}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(127,179,255,.15)} 50%{box-shadow:0 0 0 12px rgba(127,179,255,.06)}}
+
+    .list{display:flex; flex-direction:column; gap:10px; max-height:240px; overflow:auto}
+    .pill{display:flex; align-items:center; justify-content:space-between; gap:10px; background:#121722; border:1px solid #232c3a; padding:10px 12px; border-radius:12px}
+    .pill small{color:#7c8da1}
+    .pill .x{background:transparent; color:#90a4b8; border:1px solid #2a3548; padding:6px 8px; border-radius:10px; cursor:pointer}
+    .right .stat{display:flex; justify-content:space-between; color:#9fb4cc; margin:6px 0 14px}
+    .foot{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap}
+    .hint{font-size:13px; color:#93a3b8}
+    .badge{font-size:12px; color:#0c1622; background:linear-gradient(135deg,#a7f3d0,#7fb3ff); padding:6px 10px; border-radius:999px; font-weight:700}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title">
+      <h1>选书骰子</h1>
+      <span class="tag">把书名丢进来，我替你掷</span>
+    </div>
+
+    <div class="grid">
+      <section class="card left">
+        <div class="hd">
+          <h2>书单输入</h2>
+          <div class="row">
+            <button class="btn ghost" id="demoBtn" title="填充示例">示例填充</button>
+            <button class="btn" id="saveBtn" title="保存到本机">保存书单</button>
+          </div>
+        </div>
+        <div class="bd">
+          <textarea id="books" placeholder="每行一本书，或用逗号、分号分隔\n例如：\n《月亮与六便士》\n《三体》\n《罪与罚》\n……"></textarea>
+          <div style="height:12px"></div>
+          <div class="row">
+            <button class="primary" id="rollBtn">随机选一本</button>
+            <button class="btn" id="rerollBtn" title="再掷一次">不满意，再掷</button>
+            <button class="btn" id="copyBtn" title="复制选中结果">复制结果</button>
+            <button class="danger" id="clearBtn">清空书单</button>
+          </div>
+          <div class="foot">
+            <span class="hint">自动去重与清理空行，内容仅保存在本地。</span>
+            <span class="badge" id="countBadge">0 本</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card right">
+        <div class="hd">
+          <h2>今日命定之书</h2>
+          <span class="muted" id="timeTip"></span>
+        </div>
+        <div class="bd">
+          <div class="result" id="result">还没有掷点</div>
+          <div style="height:16px"></div>
+          <div class="stat"><span>历史记录</span><span class="muted" id="histCount">0 次</span></div>
+          <div class="list" id="history"></div>
+          <div style="height:12px"></div>
+          <div class="row">
+            <button class="btn" id="exportBtn">导出历史</button>
+            <button class="btn ghost" id="clearHistBtn">清空历史</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const $ = sel => document.querySelector(sel);
+    const booksTA = $('#books');
+    const countBadge = $('#countBadge');
+    const resultEl = $('#result');
+    const historyEl = $('#history');
+    const histCount = $('#histCount');
+    const timeTip = $('#timeTip');
+
+    const LS_KEYS = { list: 'pickbook:list', hist: 'pickbook:history' };
+
+    function nowStr(){
+      const d = new Date();
+      const pad = n => String(n).padStart(2,'0');
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function parseBooks(raw){
+      return Array.from(new Set(
+        raw.split(/\n|,|，|;|；/g)
+          .map(s => s.replace(/[\s\t]+/g,' ').trim())
+          .filter(Boolean)
+      ));
+    }
+
+    function updateCount(){
+      const n = parseBooks(booksTA.value).length;
+      countBadge.textContent = `${n} 本`;
+    }
+
+    function saveList(){
+      localStorage.setItem(LS_KEYS.list, booksTA.value);
+    }
+
+    function loadList(){
+      const raw = localStorage.getItem(LS_KEYS.list);
+      if(raw){ booksTA.value = raw; updateCount(); }
+    }
+
+    function loadHistory(){
+      try{ return JSON.parse(localStorage.getItem(LS_KEYS.hist) || '[]'); }
+      catch{ return []; }
+    }
+
+    function saveHistory(arr){
+      localStorage.setItem(LS_KEYS.hist, JSON.stringify(arr.slice(-100)));
+    }
+
+    function renderHistory(){
+      const arr = loadHistory();
+      historyEl.innerHTML = '';
+      arr.slice().reverse().forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'pill';
+        div.innerHTML = `<div><strong>${escapeHtml(item.book)}</strong><br><small>${item.time}</small></div>` +
+                        `<button class="x" title="移除">移除</button>`;
+        div.querySelector('.x').onclick = () => {
+          const next = loadHistory().filter(x => !(x.time === item.time && x.book === item.book));
+          saveHistory(next); renderHistory();
+        };
+        historyEl.appendChild(div);
+      });
+      histCount.textContent = `${arr.length} 次`;
+    }
+
+    function escapeHtml(s){
+      return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
+    }
+
+    function rollOnce(list){
+      if(!list.length) return null;
+      const idx = Math.floor(Math.random() * list.length);
+      return list[idx];
+    }
+
+    async function animatePick(list){
+      if(!list.length){ resultEl.textContent = '书单是空的'; return; }
+      resultEl.classList.add('spin');
+      const t0 = performance.now();
+      let last = '';
+      while(performance.now() - t0 < 900){
+        const tmp = rollOnce(list);
+        if(tmp !== last){ resultEl.textContent = tmp; last = tmp; }
+        await new Promise(r => setTimeout(r, 60));
+      }
+      resultEl.classList.remove('spin');
+      const final = rollOnce(list);
+      resultEl.textContent = final;
+      const hist = loadHistory();
+      hist.push({book: final, time: nowStr()});
+      saveHistory(hist); renderHistory();
+      return final;
+    }
+
+    // UI wiring
+    booksTA.addEventListener('input', () => { updateCount(); saveList(); });
+
+    $('#rollBtn').addEventListener('click', () => {
+      const list = parseBooks(booksTA.value);
+      animatePick(list);
+    });
+
+    $('#rerollBtn').addEventListener('click', () => {
+      const list = parseBooks(booksTA.value);
+      animatePick(list);
+    });
+
+    $('#clearBtn').addEventListener('click', () => {
+      if(confirm('确定要清空书单吗？')){ booksTA.value=''; updateCount(); saveList(); }
+    });
+
+    $('#saveBtn').addEventListener('click', () => {
+      saveList();
+      const btn = $('#saveBtn');
+      const old = btn.textContent; btn.textContent = '已保存';
+      setTimeout(()=> btn.textContent = old, 900);
+    });
+
+    $('#demoBtn').addEventListener('click', () => {
+      const demo = [
+        '《月亮与六便士》','《三体》','《百年孤独》','《追风筝的人》','《罗生门》',
+        '《沉默的大多数》','《看不见的城市》','《人类群星闪耀时》','《事故》','《纳瓦尔宝典》'
+      ].join('\n');
+      booksTA.value = demo; updateCount(); saveList();
+    });
+
+    $('#copyBtn').addEventListener('click', async () => {
+      const text = resultEl.textContent.trim();
+      if(!text || text === '还没有掷点' || text === '书单是空的'){return}
+      try{ await navigator.clipboard.writeText(text); toast('已复制到剪贴板'); }
+      catch{ toast('复制失败，可手动选择文本'); }
+    });
+
+    $('#exportBtn').addEventListener('click', () => {
+      const hist = loadHistory();
+      const content = '时间,书名\n' + hist.map(h => `${h.time},${h.book.replaceAll(',', '，')}`).join('\n');
+      const blob = new Blob([content], {type:'text/csv;charset=utf-8;'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `选书历史_${Date.now()}.csv`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    $('#clearHistBtn').addEventListener('click', () => {
+      if(confirm('清空历史记录？')){ saveHistory([]); renderHistory(); }
+    });
+
+    function toast(msg){
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#141b27;border:1px solid #2a3548;padding:10px 14px;border-radius:12px;color:#dce7f4;box-shadow:var(--shadow);z-index:9999';
+      document.body.appendChild(t);
+      setTimeout(()=>{ t.style.transition='.25s'; t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(10px)'; }, 1200);
+      setTimeout(()=> t.remove(), 1600);
+    }
+
+    // init
+    loadList(); renderHistory(); updateCount();
+    timeTip.textContent = new Date().toLocaleString();
+  </script>
+</body>
+</html>
