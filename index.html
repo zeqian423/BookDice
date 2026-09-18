@@ -69,6 +69,28 @@
     .foot{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap}
     .hint{font-size:13px; color:#93a3b8}
     .badge{font-size:12px; color:#0c1622; background:linear-gradient(135deg,#a7f3d0,#7fb3ff); padding:6px 10px; border-radius:999px; font-weight:700}
+  @media (max-width: 600px) {
+    body {
+        padding: 12px;
+    }
+    .container {
+        padding: 0;
+        gap: 16px;
+    }
+    textarea {
+        min-height: 140px;
+        max-height: 200px;
+    }
+    .btn-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+    .btn-group button {
+        width: 100%;
+        margin: 0;
+    }
+}
   </style>
 </head>
 <body>
@@ -88,7 +110,7 @@
           </div>
         </div>
         <div class="bd">
-          <textarea id="books" placeholder="每行一本书，或用逗号、分号分隔\n例如：\n《月亮与六便士》\n《三体》\n《罪与罚》\n……"></textarea>
+          <textarea id="books" placeholder="每行一本书，或用逗号、分号分隔&#10;例如：&#10;《月亮与六便士》&#10;《三体》&#10;《罪与罚》..."></textarea>
           <div style="height:12px"></div>
           <div class="row">
             <button class="primary" id="rollBtn">随机选一本</button>
