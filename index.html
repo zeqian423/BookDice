@@ -71,33 +71,33 @@
     .badge{font-size:12px; color:#0c1622; background:linear-gradient(135deg,#a7f3d0,#7fb3ff); padding:6px 10px; border-radius:999px; font-weight:700}
 @media (max-width: 600px) {
     body {
-        padding: 12px 8px !important;
+        padding: 8px !important;
     }
     .container {
         padding: 0 !important;
-        gap: 12px !important;
+        gap: 10px !important;
     }
     header {
-        margin-bottom: 12px !important;
+        margin-bottom: 8px !important;
     }
     h1 {
-        font-size: 1.5rem !important;
+        font-size: 1.4rem !important;
     }
     .card {
-        padding: 14px !important;
+        padding: 12px !important;
     }
     textarea {
-        min-height: 100px !important;
-        max-height: 140px !important;
+        min-height: 80px !important;
+        max-height: 110px !important;
     }
-    /* 核心修复：手机端让 4 个按钮变成 2x2 网格排列，解决变形溢出 */
-    .btn-group {
+    /* 准确定位 .row，把 4 个按钮变成 2x2 布局 */
+    .row {
         display: grid !important;
         grid-template-columns: 1fr 1fr !important;
         gap: 8px !important;
-        margin: 10px 0 !important;
+        margin: 8px 0 !important;
     }
-    .btn-group button {
+    .row button {
         width: 100% !important;
         margin: 0 !important;
         padding: 8px 4px !important;
